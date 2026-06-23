@@ -1,7 +1,6 @@
-﻿namespace PersonsDirectory.Application.Common.Validation
+﻿namespace PersonsDirectory.Application.Common.Validation;
+
+public interface IValidator<in T>
 {
-    public interface IValidator<in T>
-    {
-        ValidationResult Validate(T instance);
-    }
+    ValidationResult Validate(T instance);
 }

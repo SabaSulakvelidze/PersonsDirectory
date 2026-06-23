@@ -1,11 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MediatR;
+using PersonsDirectory.Application.Common.Validation;
+using AppValidationException = PersonsDirectory.Application.Common.Exceptions.ValidationException;
 
-namespace PersonsDirectory.Application.Common.Behaviors
+namespace PersonsDirectory.Application.Common.Behaviors;
+
+public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> _validators)
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
 {
-    internal class ValidationBehavior
+    
+    public async Task<TResponse> Handle(
+        TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
     {
-        5.8 Validation pipeline behavior
+        foreach (var validator in _validators)
+        {
+            var result = validator.Validate(request);
+            if (!result.IsValid)
+                throw new AppValidationException(result.ToDictionary());
+        }
+
+        return await next();
     }
 }
