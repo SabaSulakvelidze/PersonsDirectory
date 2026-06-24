@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonsDirectory.Domain.Entities;
+using PersonsDirectory.Infrastructure.Persistence.Seed;
 
 namespace PersonsDirectory.Infrastructure.Persistence;
 
@@ -13,6 +14,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        CitySeed.Apply(modelBuilder);
+
         base.OnModelCreating(modelBuilder);
     }
 }

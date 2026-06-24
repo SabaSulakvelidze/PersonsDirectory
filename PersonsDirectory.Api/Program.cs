@@ -1,23 +1,40 @@
+using Microsoft.AspNetCore.Mvc;
 using PersonsDirectory.Application;
+using PersonsDirectory.Infrastructure;
+using PersonsDirectory.WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.ContentRootPath);
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(optrions => 
+{
+    optrions.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();

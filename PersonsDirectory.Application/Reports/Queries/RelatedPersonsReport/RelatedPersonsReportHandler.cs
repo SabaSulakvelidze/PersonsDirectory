@@ -11,15 +11,14 @@ public sealed class RelatedPersonsReportHandler(IUnitOfWork _uow)
     public async Task<IReadOnlyList<RelatedPersonsReportRow>> Handle(
         RelatedPersonsReportQuery request, CancellationToken ct)
     {
-        // Group relations by owner + type, count each, project to rows.
         var rows = await _uow.Persons.Query()
             .SelectMany(p => p.RelatedPersons)
-            .GroupBy(rel => new
+            .GroupBy(r => new
             {
-                rel.PersonId,
-                rel.Person.FirstName,
-                rel.Person.LastName,
-                rel.RelationType
+                r.PersonId,
+                r.Person.FirstName,
+                r.Person.LastName,
+                r.RelationType
             })
             .Select(g => new RelatedPersonsReportRow
             {

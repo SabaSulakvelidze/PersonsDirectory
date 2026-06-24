@@ -1,34 +1,37 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using PersonsDirectory.Application.Common.Interfaces;
 using System.Linq.Expressions;
 
 namespace PersonsDirectory.Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : class
     {
-        public Task AddAsync(T entity, CancellationToken ct = default)
+        protected readonly DbSet<T> Set = context.Set<T>();
+
+        public async Task AddAsync(T entity, CancellationToken ct = default)
         {
-            
+            await Set.AddAsync(entity, ct);
         }
 
         public Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            return Set.AnyAsync(predicate, ct);
         }
 
-        public Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
+        public async Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            return await Set.FindAsync([id], ct);
         }
 
         public IQueryable<T> Query()
         {
-            throw new NotImplementedException();
+            return Set.AsNoTracking();
         }
 
         public void Remove(T entity)
         {
-            throw new NotImplementedException();
+            Set.Remove(entity);
         }
     }
 }
