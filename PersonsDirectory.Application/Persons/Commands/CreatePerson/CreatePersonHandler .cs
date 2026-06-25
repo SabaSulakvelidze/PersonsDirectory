@@ -9,7 +9,6 @@ public sealed class CreatePersonHandler(IUnitOfWork _uow) : IRequestHandler<Crea
 {
     public async Task<int> Handle(CreatePersonCommand request, CancellationToken ct)
     {
-        // Referential checks the validator can't do (need the DB).
         if (!await _uow.Cities.ExistsAsync(c => c.Id == request.CityId, ct))
             throw new BadRequestException("Selected city does not exist.");
 

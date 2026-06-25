@@ -16,7 +16,7 @@ namespace PersonsDirectory.Infrastructure.Persistence.Configurations
             b.Property(p => p.PersonalNumber).IsRequired().HasMaxLength(11);
             b.Property(p => p.Gender).IsRequired().HasConversion<int>();
             b.Property(p => p.DateOfBirth).IsRequired().HasColumnType("date");
-            b.Property(p => p.ImagePath).IsRequired().HasMaxLength(500);
+            b.Property(p => p.ImagePath).HasMaxLength(500);
 
             b.HasIndex(p => p.PersonalNumber).IsUnique();
 

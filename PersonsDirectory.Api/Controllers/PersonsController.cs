@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PersonsDirectory.Application.Persons.Commands.AddRelatedPerson;
 using PersonsDirectory.Application.Persons.Commands.CreatePerson;
 using PersonsDirectory.Application.Persons.Commands.DeletePerson;
-using PersonsDirectory.Application.Persons.Commands.RemoveRelatedPerson;
 using PersonsDirectory.Application.Persons.Commands.UpdatePerson;
 using PersonsDirectory.Application.Persons.Commands.UploadImage;
 using PersonsDirectory.Application.Persons.Dtos;
@@ -14,7 +12,7 @@ using PersonsDirectory.Application.Persons.Queries.QuickSearch;
 namespace PersonsDirectory.Api.Controllers
 {
     [ApiController]
-    [Route("api/persons")]
+    [Route("api/[Controller]")]
     public sealed class PersonsController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
@@ -25,7 +23,7 @@ namespace PersonsDirectory.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Create(int id, [FromBody] UpdatePersonCommand command, CancellationToken ct)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePersonCommand command, CancellationToken ct)
         {
             await mediator.Send(command with { Id = id }, ct);
             return NoContent();
@@ -69,19 +67,7 @@ namespace PersonsDirectory.Api.Controllers
             return Ok(new { imagePath = path });
         }
 
-        [HttpPost("{id}/related")]
-        public async Task<IActionResult> AddRelated(int id, [FromBody] AddRelatedPersonCommand command, CancellationToken ct)
-        {
-            await mediator.Send(command with { PersonId = id }, ct);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}/related/{relatedPersonId}")]
-        public async Task<IActionResult> RemoveRelated(int id, int relatedPersonId, CancellationToken ct)
-        {
-            await mediator.Send(new RemoveRelatedPersonCommand(id, relatedPersonId), ct);
-            return NoContent();
-        }
+        
 
     }
 }

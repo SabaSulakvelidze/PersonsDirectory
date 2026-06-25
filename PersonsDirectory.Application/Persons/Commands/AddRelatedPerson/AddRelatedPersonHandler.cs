@@ -15,8 +15,8 @@ public sealed class AddRelatedPersonHandler(IUnitOfWork _uow) : IRequestHandler<
         var person = await _uow.Persons.GetFullByIdAsync(request.PersonId, ct)
                      ?? throw new NotFoundException("Person", request.PersonId);
 
-        if (!await _uow.Persons.ExistsAsync(p => p.Id == request.RelatedPersonId, ct))
-            throw new NotFoundException("Related person", request.RelatedPersonId);
+        var relatedPerson = await _uow.Persons.GetFullByIdAsync(request.RelatedPersonId, ct)
+                     ?? throw new NotFoundException("Related person", request.RelatedPersonId);
 
         if (person.RelatedPersons.Any(r => r.RelatedPersonId == request.RelatedPersonId))
             throw new ConflictException("These persons are already related.");
@@ -25,6 +25,13 @@ public sealed class AddRelatedPersonHandler(IUnitOfWork _uow) : IRequestHandler<
         {
             PersonId = request.PersonId,
             RelatedPersonId = request.RelatedPersonId,
+            RelationType = request.RelationType
+        });
+
+        relatedPerson.RelatedPersons.Add(new PersonRelation
+        {
+            PersonId = request.RelatedPersonId,
+            RelatedPersonId = request.PersonId,
             RelationType = request.RelationType
         });
 

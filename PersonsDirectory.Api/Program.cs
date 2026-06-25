@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using PersonsDirectory.Application;
 using PersonsDirectory.Infrastructure;
 using PersonsDirectory.WebApi.Filters;
+using PersonsDirectory.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 
 builder.Services.AddApplication();
@@ -26,7 +25,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

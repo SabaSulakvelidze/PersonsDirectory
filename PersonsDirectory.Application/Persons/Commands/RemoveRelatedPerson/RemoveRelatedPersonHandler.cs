@@ -16,6 +16,16 @@ public sealed class RemoveRelatedPersonHandler(IUnitOfWork _uow) : IRequestHandl
             ?? throw new NotFoundException("Relation", request.RelatedPersonId);
 
         person.RelatedPersons.Remove(relation);
+
+
+        var relatedPerson = await _uow.Persons.GetFullByIdAsync(request.RelatedPersonId, ct);
+
+        var relatedPersonRelation = relatedPerson?.RelatedPersons
+            .FirstOrDefault(r => r.RelatedPersonId == request.PersonId);
+
+        if(relatedPersonRelation is not null)
+            relatedPerson!.RelatedPersons.Remove(relatedPersonRelation);
         await _uow.SaveChangesAsync(ct);
+
     }
 }

@@ -19,6 +19,6 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
                 throw new AppValidationException(result.ToDictionary());
         }
 
-        return await next();
+        return await next(ct);
     }
 }
